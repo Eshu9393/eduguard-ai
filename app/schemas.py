@@ -81,3 +81,10 @@ class StudentFeatures(BaseModel):
     sem1_approved: int = Field(ge=0, le=60)
     sem1_grade: float = Field(ge=0, le=20)
     sem1_without_evaluations: int = Field(ge=0, le=60)
+
+class PredictionResponse(BaseModel):
+    prediction: Literal["Dropout", "Enrolled", "Graduate"]
+    probabilities: dict[str, float]
+    disclaimer: str = (
+        "This is a statistical estimate, not a definitive judgment about a student."
+    )
