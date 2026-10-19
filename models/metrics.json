@@ -1,0 +1,77 @@
+{
+  "feature_set": "B",
+  "features": [
+    "Gender",
+    "Debtor",
+    "Scholarship holder",
+    "Displaced",
+    "International",
+    "Educational special needs",
+    "Daytime/evening attendance",
+    "Tuition fees up to date",
+    "Marital status",
+    "Application mode",
+    "Course",
+    "Previous qualification",
+    "Nacionality",
+    "Mother's qualification",
+    "Father's qualification",
+    "Mother's occupation",
+    "Father's occupation",
+    "Application order",
+    "Previous qualification (grade)",
+    "Admission grade",
+    "Age at enrollment",
+    "Inflation rate",
+    "Unemployment rate",
+    "GDP",
+    "Curricular units 1st sem (credited)",
+    "Curricular units 1st sem (enrolled)",
+    "Curricular units 1st sem (evaluations)",
+    "Curricular units 1st sem (approved)",
+    "Curricular units 1st sem (grade)",
+    "Curricular units 1st sem (without evaluations)"
+  ],
+  "params": {
+    "learning_rate": 0.1,
+    "max_depth": 3,
+    "n_estimators": 200
+  },
+  "random_state": 42,
+  "test_accuracy": 0.7265536723163842,
+  "test_macro_f1": 0.6368586969502094,
+  "test_weighted_f1": 0.7117549484532899,
+  "report": {
+    "Dropout": {
+      "precision": 0.7689393939393939,
+      "recall": 0.7147887323943662,
+      "f1-score": 0.7408759124087592,
+      "support": 284.0
+    },
+    "Enrolled": {
+      "precision": 0.42592592592592593,
+      "recall": 0.2893081761006289,
+      "f1-score": 0.3445692883895131,
+      "support": 159.0
+    },
+    "Graduate": {
+      "precision": 0.7680311890838206,
+      "recall": 0.8914027149321267,
+      "f1-score": 0.8251308900523561,
+      "support": 442.0
+    },
+    "accuracy": 0.7265536723163842,
+    "macro avg": {
+      "precision": 0.6542988363163801,
+      "recall": 0.6318332078090406,
+      "f1-score": 0.6368586969502094,
+      "support": 885.0
+    },
+    "weighted avg": {
+      "precision": 0.70685965613114,
+      "recall": 0.7265536723163842,
+      "f1-score": 0.7117549484532899,
+      "support": 885.0
+    }
+  }
+}
