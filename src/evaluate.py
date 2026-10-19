@@ -3,6 +3,7 @@ import os
 
 import joblib
 import matplotlib.pyplot as plt
+from features import BINARY, CATEGORICAL
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import (ConfusionMatrixDisplay, accuracy_score,
                              classification_report, f1_score,confusion_matrix)
@@ -51,4 +52,12 @@ if __name__ == "__main__":
     }
     with open("models/metrics.json", "w") as f:
         json.dump(metrics, f, indent=2)
+        baseline = {}
+    for c in X_train.columns:
+        if c in BINARY or c in CATEGORICAL:
+            baseline[c] = int(X_train[c].mode().iloc[0])
+        else:
+            baseline[c] = float(X_train[c].median())
+    with open("models/baseline.json", "w") as f:
+        json.dump(baseline, f, indent=2)
     print("Saved models/pipeline.joblib and models/metrics.json")
