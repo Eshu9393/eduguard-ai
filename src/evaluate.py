@@ -5,7 +5,7 @@ import joblib
 import matplotlib.pyplot as plt
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import (ConfusionMatrixDisplay, accuracy_score,
-                             classification_report, f1_score)
+                             classification_report, f1_score,confusion_matrix)
 from sklearn.pipeline import Pipeline
 
 from data_preprocessing import (RANDOM_STATE, FEATURE_SETS, build_preprocessor,
@@ -45,6 +45,8 @@ if __name__ == "__main__":
         "test_accuracy": accuracy_score(y_test, pred),
         "test_macro_f1": f1_score(y_test, pred, average="macro"),
         "test_weighted_f1": f1_score(y_test, pred, average="weighted"),
+                "labels": LABELS,
+        "confusion_matrix": confusion_matrix(y_test, pred, labels=LABELS).tolist(),
         "report": classification_report(y_test, pred, output_dict=True),
     }
     with open("models/metrics.json", "w") as f:

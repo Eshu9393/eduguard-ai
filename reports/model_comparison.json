@@ -1,0 +1,197 @@
+{
+  "feature_set": "B",
+  "cv_folds": 5,
+  "random_state": 42,
+  "n_train": 3539,
+  "results": [
+    {
+      "model": "Dummy (majority)",
+      "accuracy": {
+        "mean": 0.4993,
+        "std": 0.0006
+      },
+      "precision_macro": {
+        "mean": 0.1664,
+        "std": 0.0002
+      },
+      "recall_macro": {
+        "mean": 0.3333,
+        "std": 0.0
+      },
+      "f1_macro": {
+        "mean": 0.222,
+        "std": 0.0002
+      },
+      "f1_weighted": {
+        "mean": 0.3325,
+        "std": 0.0007
+      },
+      "dropout_recall": {
+        "mean": 0.0,
+        "std": 0.0
+      }
+    },
+    {
+      "model": "Logistic Regression",
+      "accuracy": {
+        "mean": 0.7477,
+        "std": 0.0129
+      },
+      "precision_macro": {
+        "mean": 0.6915,
+        "std": 0.0263
+      },
+      "recall_macro": {
+        "mean": 0.653,
+        "std": 0.0126
+      },
+      "f1_macro": {
+        "mean": 0.6592,
+        "std": 0.0162
+      },
+      "f1_weighted": {
+        "mean": 0.73,
+        "std": 0.0113
+      },
+      "dropout_recall": {
+        "mean": 0.7572,
+        "std": 0.0232
+      }
+    },
+    {
+      "model": "Decision Tree",
+      "accuracy": {
+        "mean": 0.7169,
+        "std": 0.0143
+      },
+      "precision_macro": {
+        "mean": 0.6385,
+        "std": 0.0193
+      },
+      "recall_macro": {
+        "mean": 0.6069,
+        "std": 0.0054
+      },
+      "f1_macro": {
+        "mean": 0.6052,
+        "std": 0.0088
+      },
+      "f1_weighted": {
+        "mean": 0.6906,
+        "std": 0.0052
+      },
+      "dropout_recall": {
+        "mean": 0.7177,
+        "std": 0.0338
+      }
+    },
+    {
+      "model": "Random Forest",
+      "accuracy": {
+        "mean": 0.7395,
+        "std": 0.0105
+      },
+      "precision_macro": {
+        "mean": 0.6966,
+        "std": 0.0295
+      },
+      "recall_macro": {
+        "mean": 0.6225,
+        "std": 0.0119
+      },
+      "f1_macro": {
+        "mean": 0.6219,
+        "std": 0.0141
+      },
+      "f1_weighted": {
+        "mean": 0.7063,
+        "std": 0.011
+      },
+      "dropout_recall": {
+        "mean": 0.7476,
+        "std": 0.0252
+      }
+    },
+    {
+      "model": "SVM",
+      "accuracy": {
+        "mean": 0.746,
+        "std": 0.0106
+      },
+      "precision_macro": {
+        "mean": 0.7035,
+        "std": 0.0263
+      },
+      "recall_macro": {
+        "mean": 0.6412,
+        "std": 0.0105
+      },
+      "f1_macro": {
+        "mean": 0.651,
+        "std": 0.0129
+      },
+      "f1_weighted": {
+        "mean": 0.7235,
+        "std": 0.0097
+      },
+      "dropout_recall": {
+        "mean": 0.7185,
+        "std": 0.0291
+      }
+    },
+    {
+      "model": "Gradient Boosting",
+      "accuracy": {
+        "mean": 0.7485,
+        "std": 0.0165
+      },
+      "precision_macro": {
+        "mean": 0.6869,
+        "std": 0.0302
+      },
+      "recall_macro": {
+        "mean": 0.6516,
+        "std": 0.0206
+      },
+      "f1_macro": {
+        "mean": 0.6583,
+        "std": 0.0239
+      },
+      "f1_weighted": {
+        "mean": 0.7309,
+        "std": 0.0176
+      },
+      "dropout_recall": {
+        "mean": 0.7458,
+        "std": 0.0195
+      }
+    },
+    {
+      "model": "Gradient Boosting (tuned)",
+      "accuracy": {
+        "mean": 0.7576,
+        "std": 0.0159
+      },
+      "precision_macro": {
+        "mean": 0.7028,
+        "std": 0.0271
+      },
+      "recall_macro": {
+        "mean": 0.6667,
+        "std": 0.0174
+      },
+      "f1_macro": {
+        "mean": 0.6749,
+        "std": 0.0194
+      },
+      "f1_weighted": {
+        "mean": 0.7428,
+        "std": 0.0148
+      },
+      "dropout_recall": {
+        "mean": 0.7519,
+        "std": 0.0301
+      }
+    }
+  ]
+}

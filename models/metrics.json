@@ -41,6 +41,28 @@
   "test_accuracy": 0.7265536723163842,
   "test_macro_f1": 0.6368586969502094,
   "test_weighted_f1": 0.7117549484532899,
+  "labels": [
+    "Dropout",
+    "Enrolled",
+    "Graduate"
+  ],
+  "confusion_matrix": [
+    [
+      203,
+      31,
+      50
+    ],
+    [
+      44,
+      46,
+      69
+    ],
+    [
+      17,
+      31,
+      394
+    ]
+  ],
   "report": {
     "Dropout": {
       "precision": 0.7689393939393939,
