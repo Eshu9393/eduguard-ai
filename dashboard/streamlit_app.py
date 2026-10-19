@@ -235,6 +235,58 @@ def render_result(out, p):
                "A SHAP-based explanation is the next stage of this project.")
 
 
+METRIC_LABELS = {
+    "dropout_recall": "Dropout recall",
+    "f1_macro": "Macro F1",
+    "accuracy": "Accuracy",
+    "f1_weighted": "Weighted F1",
+    "recall_macro": "Macro recall",
+    "precision_macro": "Macro precision",
+}
+SELECTED_MODEL = "Gradient Boosting (tuned)"  # the model we evaluated on the test set
+
+st.markdown("""
+<style>
+.cm {width: 100%; border-collapse: collapse; margin: .3rem 0;}
+.cm th {font-size: .75rem; font-weight: 500; opacity: .75; padding: .4rem;}
+.cm td {text-align: center; padding: .7rem .4rem; border: 1px solid rgba(128,128,128,.25);
+  font-size: 1.15rem;}
+</style>
+""", unsafe_allow_html=True)
+
+
+def comparison_bars(results, metric):
+    rows = sorted(results, key=lambda r: r[metric]["mean"], reverse=True)
+    out = []
+    for r in rows:
+        m, sd = r[metric]["mean"], r[metric]["std"]
+        final = r["model"] == SELECTED_MODEL
+        color = "#6d28d9" if final else "rgba(128,128,128,.55)"
+        tag = " ★ selected" if final else ""
+        out.append(
+            f'<div class="bar-row"><div class="bar-label"><span>{r["model"]}{tag}</span>'
+            f'<span><b>{m:.3f}</b> <span class="muted">± {sd:.3f}</span></span></div>'
+            f'<div class="bar-track"><div class="bar-fill" '
+            f'style="width:{m * 100:.1f}%;background:{color}"></div></div></div>'
+        )
+    return "".join(out)
+
+
+def confusion_html(labels, cm):
+    head = "<tr><th></th>" + "".join(f"<th>Predicted<br>{l}</th>" for l in labels) + "</tr>"
+    body = ""
+    for i, row in enumerate(cm):
+        total = sum(row) or 1
+        cells = ""
+        for j, v in enumerate(row):
+            share = v / total
+            rgb = "48,164,108" if i == j else "229,72,77"
+            cells += (f'<td style="background:rgba({rgb},{0.08 + 0.55 * share:.2f})">'
+                      f'<b>{v}</b><br><span class="muted">{share:.0%} of actual</span></td>')
+        body += f"<tr><th>Actual<br>{labels[i]}</th>{cells}</tr>"
+    return f'<table class="cm">{head}{body}</table>'
+
+
 # ---------------- Sidebar ----------------
 with st.sidebar:
     st.header("🎓 EduGuard AI")
@@ -271,7 +323,9 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-tab_predict, tab_codes, tab_about = st.tabs(["Predict", "Code guide", "About & limitations"])
+tab_predict, tab_perf, tab_codes, tab_about = st.tabs(
+    ["Predict", "Model performance", "Code guide", "About & limitations"]
+)
 
 # ---------------- Predict ----------------
 with tab_predict:
@@ -397,6 +451,67 @@ with tab_predict:
                 "</div></div>",
                 unsafe_allow_html=True,
             )
+
+
+
+
+
+# ---------------- Model performance ----------------
+with tab_perf:
+    perf = api_get("/model-performance")
+    if perf is None:
+        st.info("Performance data isn't available. Start the API, then run "
+                "`python src/evaluate.py` and `python src/compare_models.py`.")
+    else:
+        test, comp = perf["test"], perf["comparison"]
+        st.markdown("### Held-out test results")
+        st.caption("Scored once on 885 students the model never saw during training or tuning.")
+        k1, k2, k3 = st.columns(3)
+        k1.markdown(tile("Accuracy", f"{test['accuracy']:.1%}"), unsafe_allow_html=True)
+        k2.markdown(tile("Macro F1", f"{test['macro_f1']:.3f}"), unsafe_allow_html=True)
+        k3.markdown(tile("Dropout recall", f"{test['per_class']['Dropout']['recall']:.1%}"),
+                    unsafe_allow_html=True)
+
+        cm_col, pc_col = st.columns([3, 2], gap="large")
+        with cm_col:
+            st.markdown("##### Confusion matrix")
+            st.markdown(confusion_html(test["labels"], test["confusion_matrix"]),
+                        unsafe_allow_html=True)
+            st.caption("Rows are the true outcome, columns the prediction. Green cells are "
+                       "correct calls; red cells are mistakes. Percentages are shares of each "
+                       "true class, so the diagonal shows recall.")
+        with pc_col:
+            st.markdown("##### Per-class scores")
+            df_pc = pd.DataFrame(test["per_class"]).T[["precision", "recall", "f1-score", "support"]]
+            df_pc["support"] = df_pc["support"].astype(int)
+            st.dataframe(df_pc.round(3))
+            st.caption("Enrolled is the weakest class: its outcome is still open, so the "
+                       "model finds only a minority of those students.")
+
+        st.markdown("### Model comparison")
+        if comp is None:
+            st.info("Run `python src/compare_models.py` to generate the comparison.")
+        else:
+            metric = st.radio("Metric", list(METRIC_LABELS), format_func=METRIC_LABELS.get,
+                              horizontal=True)
+            st.markdown(comparison_bars(comp["results"], metric), unsafe_allow_html=True)
+            st.caption(
+                f"{comp['cv_folds']}-fold stratified cross-validation on "
+                f"{comp['n_train']} training students (feature set {comp['feature_set']}). "
+                "Bars show the mean; ± is the spread across folds. Models whose gaps are "
+                "smaller than the spread are effectively tied."
+            )
+            st.markdown(
+                "**How the model was chosen.** We wanted a model that catches dropouts, not "
+                "just one with high accuracy. The rule: require cross-validated Dropout recall "
+                "of at least 0.74, then pick the best macro F1. The 0.74 threshold was set after "
+                "seeing the cross-validation results, and the test set was used only once, "
+                "after the choice was made."
+            )
+
+
+
+
 
 # ---------------- Code guide ----------------
 with tab_codes:

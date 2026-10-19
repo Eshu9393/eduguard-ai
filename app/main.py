@@ -1,3 +1,5 @@
+import json
+from pathlib import Path
 import logging
 from contextlib import asynccontextmanager
 
@@ -8,7 +10,7 @@ from app.schemas import PredictionResponse, StudentFeatures
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("eduguard")
-
+REPORTS_DIR = Path(__file__).resolve().parents[1] / "reports"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -62,3 +64,28 @@ def predict(student: StudentFeatures, request: Request):
     result = get_predictor(request).predict(student)
     logger.info("Prediction made: %s", result["prediction"])
     return result
+
+@app.get("/model-performance")
+def model_performance(request: Request):
+    meta = get_predictor(request).metadata
+    labels = meta.get("labels")
+    if labels is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Evaluation results missing. Run: python src/evaluate.py",
+        )
+    comparison = None
+    path = REPORTS_DIR / "model_comparison.json"
+    if path.exists():
+        comparison = json.loads(path.read_text())
+    return {
+        "test": {
+            "accuracy": meta["test_accuracy"],
+            "macro_f1": meta["test_macro_f1"],
+            "weighted_f1": meta["test_weighted_f1"],
+            "labels": labels,
+            "confusion_matrix": meta["confusion_matrix"],
+            "per_class": {c: meta["report"][c] for c in labels},
+        },
+        "comparison": comparison,
+    }

@@ -72,3 +72,12 @@ def test_predict_rejects_missing_field(client):
     r = client.post("/predict", json=payload)
     assert r.status_code == 422
     assert "sem1_approved" in str(r.json()["detail"])
+
+def test_model_performance(client):
+    r = client.get("/model-performance")
+    assert r.status_code == 200
+    test = r.json()["test"]
+    assert test["labels"] == ["Dropout", "Enrolled", "Graduate"]
+    cm = test["confusion_matrix"]
+    assert len(cm) == 3 and all(len(row) == 3 for row in cm)
+    assert set(test["per_class"]) == {"Dropout", "Enrolled", "Graduate"}
