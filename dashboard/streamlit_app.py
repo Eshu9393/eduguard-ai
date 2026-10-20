@@ -214,6 +214,18 @@ def render_result(out, p):
     for note in soft_checks(p):
         st.warning(note)
     st.caption(out["disclaimer"])
+    exp = out.get("explanation")
+    if exp:
+        st.markdown("##### Why this score?")
+        st.markdown(
+            f"The model's **Dropout score** is **{exp['student_score']:.0%}** for this student, "
+            f"compared with **{exp['typical_student_score']:.0%}** for a typical student. "
+            "Red bars pushed the score up and green bars pushed it down. "
+            "One point (pt) is one percentage point of Dropout score."
+        )
+        st.markdown(factors_html(exp), unsafe_allow_html=True)
+        st.caption(exp["note"] + " The explanation is always about the Dropout score, "
+                   "whichever outcome was predicted.")
 
     enrolled, approved = p["sem1_enrolled"], p["sem1_approved"]
     rate = min(approved / enrolled, 1.0) if enrolled > 0 else 0.0
@@ -231,8 +243,7 @@ def render_result(out, p):
         'background:linear-gradient(90deg,#4338ca,#0e7490)"></div></div>',
         unsafe_allow_html=True,
     )
-    st.caption("These are the values you entered, not the model's reasoning. "
-               "A SHAP-based explanation is the next stage of this project.")
+    st.caption("The tiles above show the values you entered, not the model's reasoning.")
 
 
 METRIC_LABELS = {
@@ -286,6 +297,81 @@ def confusion_html(labels, cm):
         body += f"<tr><th>Actual<br>{labels[i]}</th>{cells}</tr>"
     return f'<table class="cm">{head}{body}</table>'
 
+
+FEATURE_LABELS = {
+    "Curricular units 1st sem (approved)": "Units approved",
+    "Curricular units 1st sem (enrolled)": "Units enrolled",
+    "Curricular units 1st sem (evaluations)": "Evaluations taken",
+    "Curricular units 1st sem (credited)": "Units credited",
+    "Curricular units 1st sem (grade)": "Average grade",
+    "Curricular units 1st sem (without evaluations)": "Units without evaluations",
+    "Tuition fees up to date": "Tuition fees up to date",
+    "Previous qualification (grade)": "Previous qualification grade",
+    "Daytime/evening attendance": "Attendance",
+    "Nacionality": "Nationality",
+}
+VALUE_TABLES = {
+    "Course": COURSE, "Application mode": APPLICATION_MODE,
+    "Marital status": MARITAL_STATUS, "Previous qualification": PREVIOUS_QUALIFICATION,
+    "Nacionality": NATIONALITY, "Mother's qualification": MOTHER_QUALIFICATION,
+    "Father's qualification": FATHER_QUALIFICATION,
+    "Mother's occupation": MOTHER_OCCUPATION, "Father's occupation": FATHER_OCCUPATION,
+    "Gender": GENDER,
+}
+YES_NO = {"Debtor", "Displaced", "Educational special needs", "International",
+          "Scholarship holder", "Tuition fees up to date"}
+TAGS = {"Gender": "sensitive attribute", "Inflation rate": "economic context",
+        "Unemployment rate": "economic context", "GDP": "economic context"}
+
+st.markdown("""
+<style>
+.fx-row {margin: .75rem 0;}
+.fx-top {display: flex; justify-content: space-between; font-size: .92rem;}
+.fx-track {position: relative; height: 10px; margin: .35rem 0; border-radius: 999px;
+  background: rgba(128,128,128,.15);}
+.fx-axis {position: absolute; left: 50%; top: -3px; bottom: -3px; width: 2px;
+  background: rgba(128,128,128,.6);}
+.fx-bar {position: absolute; top: 0; bottom: 0; border-radius: 999px;}
+.tag {display: inline-block; margin-left: .4rem; padding: .05rem .5rem; border-radius: 999px;
+  font-size: .68rem; font-weight: 500; border: 1px solid rgba(128,128,128,.45); opacity: .85;}
+</style>
+""", unsafe_allow_html=True)
+
+
+def fmt_value(feature, v):
+    if feature in YES_NO:
+        return "Yes" if v else "No"
+    if feature == "Daytime/evening attendance":
+        return "Daytime" if v else "Evening"
+    table = VALUE_TABLES.get(feature)
+    if table is not None:
+        text = table.get(int(v), f"code {int(v)}")
+        return text if len(text) <= 36 else text[:35] + "…"
+    return f"{v:g}"
+
+
+def factors_html(exp):
+    factors = exp["top_factors"]
+    scale = max(abs(f["effect"]) for f in factors) or 1.0
+    rows = []
+    for f in factors:
+        e, name = f["effect"], f["feature"]
+        w = abs(e) / scale * 50
+        color = "#e5484d" if e > 0 else "#30a46c"
+        pos = f"left:50%;width:{w:.1f}%" if e > 0 else f"left:{50 - w:.1f}%;width:{w:.1f}%"
+        tag = f'<span class="tag">{TAGS[name]}</span>' if name in TAGS else ""
+        label = FEATURE_LABELS.get(name, name)
+        rows.append(
+            f'<div class="fx-row"><div class="fx-top"><span><b>{label}</b>{tag}</span>'
+            f'<span style="color:{color}"><b>{e * 100:+.1f}</b> pts</span></div>'
+            f'<div class="fx-track"><div class="fx-axis"></div>'
+            f'<div class="fx-bar" style="{pos};background:{color}"></div></div>'
+            f'<div class="muted">{fmt_value(name, f["value"])} '
+            f'· typical student: {fmt_value(name, f["typical_value"])}</div></div>'
+        )
+    other = exp["other_features_effect"]
+    rows.append(f'<div class="muted">All other features combined: <b>{other * 100:+.1f}</b> pts</div>')
+    return "".join(rows)
 
 # ---------------- Sidebar ----------------
 with st.sidebar:
