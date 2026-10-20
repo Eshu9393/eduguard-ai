@@ -473,10 +473,9 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-tab_predict, tab_perf, tab_codes, tab_about = st.tabs(
-    ["Predict", "Model performance", "Code guide", "About & limitations"]
+tab_predict, tab_codes, tab_about, tab_perf = st.tabs(
+    ["Predict", "Code guide", "About & limitations", "Model details"]
 )
-
 # ---------------- Predict ----------------
 with tab_predict:
     with st.form("student_form"):
@@ -597,6 +596,8 @@ with tab_predict:
 
 # ---------------- Model performance ----------------
 with tab_perf:
+    st.caption("Technical details about how the model was built and tested. "
+               "You don't need this page to use the tool.")
     perf = api_get("/model-performance")
     if perf is None:
         st.info("Performance data isn't available. Start the service, then run "
