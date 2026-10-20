@@ -14,69 +14,101 @@ S = st.session_state
 
 st.set_page_config(page_title="EduGuard AI", page_icon="🎓", layout="wide")
 
-st.markdown("""
-<style>
+CSS = """
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 html, body, [class*="css"] {font-family: 'Inter', sans-serif;}
-.block-container {padding-top: 1.6rem; max-width: 1250px;}
+.block-container {padding-top: 1.5rem; max-width: 1100px;}
 
-.hero {position: relative; overflow: hidden; padding: 2rem 2.2rem; border-radius: 20px;
-  color: #fff; margin-bottom: 1.4rem;
-  background: linear-gradient(125deg,#312e81 0%,#6d28d9 50%,#0e7490 100%);}
-.hero::before {content: ""; position: absolute; right: -60px; top: -80px; width: 280px;
-  height: 280px; border-radius: 50%; background: rgba(255,255,255,.10);}
-.hero::after {content: ""; position: absolute; right: 120px; bottom: -110px; width: 220px;
-  height: 220px; border-radius: 50%; background: rgba(255,255,255,.07);}
-.hero h1 {margin: 0; font-size: 2.3rem; font-weight: 700; color: #fff; position: relative;}
-.hero p {margin: .5rem 0 1rem; max-width: 640px; opacity: .93; font-size: 1.05rem; position: relative;}
-.chip {display: inline-block; margin: 0 .5rem .3rem 0; padding: .28rem .8rem; border-radius: 999px;
-  font-size: .8rem; font-weight: 500; background: rgba(255,255,255,.18);
-  border: 1px solid rgba(255,255,255,.28); position: relative;}
+.hero {padding: 1.6rem 1.8rem; border-radius: 16px; background: #312e81; margin-bottom: 1rem;}
+.hero h1 {margin: 0; font-size: 1.9rem; font-weight: 700; color: #fff;}
+.hero p {margin: .45rem 0 0; max-width: 720px; font-size: 1.02rem; line-height: 1.5;
+  color: rgba(255,255,255,.93);}
+
+.steps {display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: .8rem; margin-bottom: 1.2rem;}
+.steps .s {display: flex; gap: .7rem; align-items: flex-start; padding: .8rem 1rem;
+  border: 1px solid rgba(128,128,128,.28); border-radius: 12px; font-size: .9rem;}
+.steps .s b {display: block; font-size: .95rem;}
 
 .step {display: flex; align-items: center; gap: .6rem; font-weight: 600; font-size: 1.05rem; margin-bottom: .2rem;}
-.badge {display: inline-flex; align-items: center; justify-content: center; width: 1.7rem;
-  height: 1.7rem; border-radius: 50%; color: #fff; font-size: .85rem; font-weight: 700;
-  background: linear-gradient(135deg,#4338ca,#7c3aed);}
-.hint {font-size: .85rem; opacity: .7; margin: 0 0 .6rem;}
+.badge {flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
+  width: 1.7rem; height: 1.7rem; border-radius: 50%; color: #fff; font-size: .85rem;
+  font-weight: 700; background: #4338ca;}
+.hint {font-size: .85rem; opacity: .75; margin: 0 0 .6rem;}
+.muted {opacity: .75; font-size: .85rem;}
+.kicker {font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; opacity: .7;}
 
-.card {border: 1px solid rgba(128,128,128,.28); border-radius: 16px; padding: 1.2rem 1.3rem;
-  background: rgba(128,128,128,.05); margin-bottom: .9rem;}
-.result {display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;}
-.result .bars {flex: 1; min-width: 190px;}
-.outcome {font-size: 1.9rem; font-weight: 700; line-height: 1.1; margin: .15rem 0 .45rem;}
+.card {border: 1px solid rgba(128,128,128,.28); border-radius: 14px; padding: 1.1rem 1.3rem;
+  background: rgba(128,128,128,.04); margin-bottom: .9rem; line-height: 1.5;}
+.card ul {margin: .4rem 0 0; padding-left: 1.2rem;}
+.card li {margin: .3rem 0; font-size: .93rem;}
+.card p {margin: .45rem 0 0; font-size: .95rem;}
+.outcome {font-size: 2rem; font-weight: 700; line-height: 1.1; margin: .15rem 0 .5rem;}
 .pill {display: inline-block; padding: .18rem .7rem; border-radius: 999px;
   font-size: .78rem; font-weight: 600; color: #fff;}
+.result {display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-top: .6rem;}
+.result .bars {flex: 1; min-width: 180px;}
+
 .bar-row {margin: .55rem 0;}
 .bar-label {display: flex; justify-content: space-between; font-size: .9rem; margin-bottom: .2rem;}
 .bar-track {height: 9px; border-radius: 999px; background: rgba(128,128,128,.22); overflow: hidden;}
 .bar-fill {height: 100%; border-radius: 999px;}
-.muted {opacity: .72; font-size: .85rem;}
 
-.tiles {display: grid; grid-template-columns: repeat(2, 1fr); gap: .6rem; margin: .4rem 0 .6rem;}
+.tiles {display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .6rem; margin: .4rem 0 .8rem;}
 .tile {border: 1px solid rgba(128,128,128,.25); border-radius: 12px; padding: .7rem .9rem;
   background: rgba(128,128,128,.04);}
-.tile .l {font-size: .72rem; opacity: .7; text-transform: uppercase; letter-spacing: .05em;}
+.tile .l {font-size: .72rem; opacity: .75; text-transform: uppercase; letter-spacing: .05em;}
 .tile .v {font-size: 1.3rem; font-weight: 700; margin-top: .1rem;}
 
-.howto {display: grid; gap: .7rem; margin-top: .6rem;}
-.howto div {display: flex; gap: .7rem; align-items: flex-start;}
+.fx-row {margin: .75rem 0;}
+.fx-top {display: flex; justify-content: space-between; font-size: .92rem;}
+.fx-track {position: relative; height: 10px; margin: .35rem 0; border-radius: 999px;
+  background: rgba(128,128,128,.15);}
+.fx-axis {position: absolute; left: 50%; top: -3px; bottom: -3px; width: 2px;
+  background: rgba(128,128,128,.6);}
+.fx-bar {position: absolute; top: 0; bottom: 0; border-radius: 999px;}
+.tag {display: inline-block; margin-left: .4rem; padding: .05rem .5rem; border-radius: 999px;
+  font-size: .68rem; font-weight: 500; border: 1px solid rgba(128,128,128,.45);}
 
-section[data-testid="stSidebar"] {background: linear-gradient(180deg, rgba(109,40,217,.10), rgba(14,116,144,.06));}
+.cm {width: 100%; border-collapse: collapse; margin: .3rem 0;}
+.cm th {font-size: .75rem; font-weight: 500; opacity: .8; padding: .4rem;}
+.cm td {text-align: center; padding: .7rem .4rem; border: 1px solid rgba(128,128,128,.25);
+  font-size: 1.15rem;}
+
+section[data-testid="stSidebar"] {background: rgba(67,56,202,.06);}
 .stButton > button, [data-testid="stFormSubmitButton"] > button {width: 100%; border-radius: 10px;}
-[data-testid="stFormSubmitButton"] > button {background: linear-gradient(120deg,#4338ca,#7c3aed);
-  color: #fff; border: 0; font-weight: 600; padding: .65rem 1rem; font-size: 1rem;}
+[data-testid="stFormSubmitButton"] > button {background: #4338ca; color: #fff; border: 0;
+  font-weight: 600; padding: .7rem 1rem; font-size: 1.05rem;}
+[data-testid="stFormSubmitButton"] > button:hover {background: #3730a3;}
+button:focus-visible, [role="tab"]:focus-visible {outline: 3px solid #7c3aed; outline-offset: 2px;}
 button[data-baseweb="tab"] {font-weight: 600;}
-</style>
-""", unsafe_allow_html=True)
+"""
+st.markdown("<style>" + CSS + "</style>", unsafe_allow_html=True)
 
 ORDER = ["Dropout", "Enrolled", "Graduate"]
-COLORS = {"Dropout": "#e5484d", "Enrolled": "#f5a524", "Graduate": "#30a46c"}
-MEANING = {
-    "Dropout": "The inputs resemble students who left before finishing. Treat this "
-               "as a prompt to check in and offer support, not as a verdict.",
-    "Enrolled": "The inputs resemble students who were still studying when the normal "
-                "course duration ended. Their outcome is still open.",
-    "Graduate": "The inputs resemble students who completed the course on time.",
+COLORS = {"Dropout": "#c62828", "Enrolled": "#b45309", "Graduate": "#1b7f55"}
+PHRASE = {
+    "Dropout": "left before finishing",
+    "Enrolled": "were still studying when the normal course duration ended",
+    "Graduate": "finished the course on time",
+}
+NEXT_STEPS = {
+    "Dropout": [
+        "Reach out soon for a friendly, supportive conversation.",
+        "Ask about academic difficulties, money worries, or personal circumstances.",
+        "Point the student to tutoring, financial aid, or counselling services.",
+        "Use the main reasons above as conversation starters, not conclusions.",
+    ],
+    "Enrolled": [
+        "Keep supporting the student and check progress at the next milestone.",
+        "The model is least reliable for this group, so treat this outcome with extra caution.",
+        "Watch the Dropout score in the chart below. If it is high, consider a check-in.",
+    ],
+    "Graduate": [
+        "The model suggests no special action. Routine support is enough.",
+        "The model can miss students who need help. If the student raises a concern, take it seriously.",
+        "Re-check after the next semester's results, since the picture can change.",
+    ],
 }
 
 DEFAULTS = {
@@ -97,6 +129,40 @@ PRESETS = {
 }
 for k, v in DEFAULTS.items():
     S.setdefault(k, v)
+
+METRIC_LABELS = {
+    "dropout_recall": "Dropout recall",
+    "f1_macro": "Macro F1",
+    "accuracy": "Accuracy",
+    "f1_weighted": "Weighted F1",
+    "recall_macro": "Macro recall",
+    "precision_macro": "Macro precision",
+}
+SELECTED_MODEL = "Gradient Boosting (tuned)"
+
+FEATURE_LABELS = {
+    "Curricular units 1st sem (approved)": "Units approved",
+    "Curricular units 1st sem (enrolled)": "Units enrolled",
+    "Curricular units 1st sem (evaluations)": "Evaluations taken",
+    "Curricular units 1st sem (credited)": "Units credited",
+    "Curricular units 1st sem (grade)": "Average grade",
+    "Curricular units 1st sem (without evaluations)": "Units without evaluations",
+    "Previous qualification (grade)": "Previous qualification grade",
+    "Daytime/evening attendance": "Attendance",
+    "Nacionality": "Nationality",
+}
+VALUE_TABLES = {
+    "Course": COURSE, "Application mode": APPLICATION_MODE,
+    "Marital status": MARITAL_STATUS, "Previous qualification": PREVIOUS_QUALIFICATION,
+    "Nacionality": NATIONALITY, "Mother's qualification": MOTHER_QUALIFICATION,
+    "Father's qualification": FATHER_QUALIFICATION,
+    "Mother's occupation": MOTHER_OCCUPATION, "Father's occupation": FATHER_OCCUPATION,
+    "Gender": GENDER,
+}
+YES_NO = {"Debtor", "Displaced", "Educational special needs", "International",
+          "Scholarship holder", "Tuition fees up to date"}
+TAGS = {"Gender": "sensitive attribute", "Inflation rate": "economic context",
+        "Unemployment rate": "economic context", "GDP": "economic context"}
 
 
 def apply_preset(name):
@@ -156,6 +222,10 @@ def hint(text):
     st.markdown(f'<p class="hint">{text}</p>', unsafe_allow_html=True)
 
 
+def tile(label, value):
+    return f'<div class="tile"><div class="l">{label}</div><div class="v">{value}</div></div>'
+
+
 def donut_svg(probs, pred):
     segs, cum = [], 0.0
     for cls in ORDER:
@@ -189,155 +259,6 @@ def bars_html(probs):
     return "".join(rows)
 
 
-def tile(label, value):
-    return f'<div class="tile"><div class="l">{label}</div><div class="v">{value}</div></div>'
-
-
-def render_result(out, p):
-    pred, probs = out["prediction"], out["probabilities"]
-    top = probs[pred]
-    conf = "High score" if top >= 0.7 else "Moderate score" if top >= 0.5 else "Low score: mixed signals"
-    color = COLORS[pred]
-    st.markdown(
-        f'<div class="card" style="background:linear-gradient(135deg,{color}22,transparent);'
-        f'border-color:{color}66">'
-        '<div class="muted">Most likely outcome</div>'
-        f'<div class="outcome" style="color:{color}">{pred}</div>'
-        f'<span class="pill" style="background:{color}">{conf}</span>'
-        f'<p style="margin:.8rem 0 .6rem">{MEANING[pred]}</p>'
-        f'<div class="result"><div>{donut_svg(probs, pred)}</div>'
-        f'<div class="bars">{bars_html(probs)}</div></div>'
-        '<div class="muted" style="margin-top:.5rem">Model scores, not verified '
-        "probabilities of real outcomes.</div></div>",
-        unsafe_allow_html=True,
-    )
-    for note in soft_checks(p):
-        st.warning(note)
-    st.caption(out["disclaimer"])
-    exp = out.get("explanation")
-    if exp:
-        st.markdown("##### Why this score?")
-        st.markdown(
-            f"The model's **Dropout score** is **{exp['student_score']:.0%}** for this student, "
-            f"compared with **{exp['typical_student_score']:.0%}** for a typical student. "
-            "Red bars pushed the score up and green bars pushed it down. "
-            "One point (pt) is one percentage point of Dropout score."
-        )
-        st.markdown(factors_html(exp), unsafe_allow_html=True)
-        st.caption(exp["note"] + " The explanation is always about the Dropout score, "
-                   "whichever outcome was predicted.")
-
-    enrolled, approved = p["sem1_enrolled"], p["sem1_approved"]
-    rate = min(approved / enrolled, 1.0) if enrolled > 0 else 0.0
-    st.markdown("##### Inputs at a glance")
-    st.markdown(
-        '<div class="tiles">'
-        + tile("Units passed", f"{approved} of {enrolled}")
-        + tile("Average grade", f"{p['sem1_grade']:.1f} / 20")
-        + tile("Tuition fees", "Up to date" if p["tuition_fees_up_to_date"] else "Not up to date")
-        + tile("Age at enrollment", p["age_at_enrollment"])
-        + "</div>"
-        '<div class="bar-label"><span class="muted">Share of enrolled units passed</span>'
-        f"<span><b>{rate:.0%}</b></span></div>"
-        f'<div class="bar-track"><div class="bar-fill" style="width:{rate * 100:.0f}%;'
-        'background:linear-gradient(90deg,#4338ca,#0e7490)"></div></div>',
-        unsafe_allow_html=True,
-    )
-    st.caption("The tiles above show the values you entered, not the model's reasoning.")
-
-
-METRIC_LABELS = {
-    "dropout_recall": "Dropout recall",
-    "f1_macro": "Macro F1",
-    "accuracy": "Accuracy",
-    "f1_weighted": "Weighted F1",
-    "recall_macro": "Macro recall",
-    "precision_macro": "Macro precision",
-}
-SELECTED_MODEL = "Gradient Boosting (tuned)"  # the model we evaluated on the test set
-
-st.markdown("""
-<style>
-.cm {width: 100%; border-collapse: collapse; margin: .3rem 0;}
-.cm th {font-size: .75rem; font-weight: 500; opacity: .75; padding: .4rem;}
-.cm td {text-align: center; padding: .7rem .4rem; border: 1px solid rgba(128,128,128,.25);
-  font-size: 1.15rem;}
-</style>
-""", unsafe_allow_html=True)
-
-
-def comparison_bars(results, metric):
-    rows = sorted(results, key=lambda r: r[metric]["mean"], reverse=True)
-    out = []
-    for r in rows:
-        m, sd = r[metric]["mean"], r[metric]["std"]
-        final = r["model"] == SELECTED_MODEL
-        color = "#6d28d9" if final else "rgba(128,128,128,.55)"
-        tag = " ★ selected" if final else ""
-        out.append(
-            f'<div class="bar-row"><div class="bar-label"><span>{r["model"]}{tag}</span>'
-            f'<span><b>{m:.3f}</b> <span class="muted">± {sd:.3f}</span></span></div>'
-            f'<div class="bar-track"><div class="bar-fill" '
-            f'style="width:{m * 100:.1f}%;background:{color}"></div></div></div>'
-        )
-    return "".join(out)
-
-
-def confusion_html(labels, cm):
-    head = "<tr><th></th>" + "".join(f"<th>Predicted<br>{l}</th>" for l in labels) + "</tr>"
-    body = ""
-    for i, row in enumerate(cm):
-        total = sum(row) or 1
-        cells = ""
-        for j, v in enumerate(row):
-            share = v / total
-            rgb = "48,164,108" if i == j else "229,72,77"
-            cells += (f'<td style="background:rgba({rgb},{0.08 + 0.55 * share:.2f})">'
-                      f'<b>{v}</b><br><span class="muted">{share:.0%} of actual</span></td>')
-        body += f"<tr><th>Actual<br>{labels[i]}</th>{cells}</tr>"
-    return f'<table class="cm">{head}{body}</table>'
-
-
-FEATURE_LABELS = {
-    "Curricular units 1st sem (approved)": "Units approved",
-    "Curricular units 1st sem (enrolled)": "Units enrolled",
-    "Curricular units 1st sem (evaluations)": "Evaluations taken",
-    "Curricular units 1st sem (credited)": "Units credited",
-    "Curricular units 1st sem (grade)": "Average grade",
-    "Curricular units 1st sem (without evaluations)": "Units without evaluations",
-    "Tuition fees up to date": "Tuition fees up to date",
-    "Previous qualification (grade)": "Previous qualification grade",
-    "Daytime/evening attendance": "Attendance",
-    "Nacionality": "Nationality",
-}
-VALUE_TABLES = {
-    "Course": COURSE, "Application mode": APPLICATION_MODE,
-    "Marital status": MARITAL_STATUS, "Previous qualification": PREVIOUS_QUALIFICATION,
-    "Nacionality": NATIONALITY, "Mother's qualification": MOTHER_QUALIFICATION,
-    "Father's qualification": FATHER_QUALIFICATION,
-    "Mother's occupation": MOTHER_OCCUPATION, "Father's occupation": FATHER_OCCUPATION,
-    "Gender": GENDER,
-}
-YES_NO = {"Debtor", "Displaced", "Educational special needs", "International",
-          "Scholarship holder", "Tuition fees up to date"}
-TAGS = {"Gender": "sensitive attribute", "Inflation rate": "economic context",
-        "Unemployment rate": "economic context", "GDP": "economic context"}
-
-st.markdown("""
-<style>
-.fx-row {margin: .75rem 0;}
-.fx-top {display: flex; justify-content: space-between; font-size: .92rem;}
-.fx-track {position: relative; height: 10px; margin: .35rem 0; border-radius: 999px;
-  background: rgba(128,128,128,.15);}
-.fx-axis {position: absolute; left: 50%; top: -3px; bottom: -3px; width: 2px;
-  background: rgba(128,128,128,.6);}
-.fx-bar {position: absolute; top: 0; bottom: 0; border-radius: 999px;}
-.tag {display: inline-block; margin-left: .4rem; padding: .05rem .5rem; border-radius: 999px;
-  font-size: .68rem; font-weight: 500; border: 1px solid rgba(128,128,128,.45); opacity: .85;}
-</style>
-""", unsafe_allow_html=True)
-
-
 def fmt_value(feature, v):
     if feature in YES_NO:
         return "Yes" if v else "No"
@@ -357,13 +278,14 @@ def factors_html(exp):
     for f in factors:
         e, name = f["effect"], f["feature"]
         w = abs(e) / scale * 50
-        color = "#e5484d" if e > 0 else "#30a46c"
+        color = COLORS["Dropout"] if e > 0 else COLORS["Graduate"]
         pos = f"left:50%;width:{w:.1f}%" if e > 0 else f"left:{50 - w:.1f}%;width:{w:.1f}%"
         tag = f'<span class="tag">{TAGS[name]}</span>' if name in TAGS else ""
         label = FEATURE_LABELS.get(name, name)
+        arrow = "▲" if e > 0 else "▼"
         rows.append(
             f'<div class="fx-row"><div class="fx-top"><span><b>{label}</b>{tag}</span>'
-            f'<span style="color:{color}"><b>{e * 100:+.1f}</b> pts</span></div>'
+            f'<span style="color:{color}">{arrow} <b>{e * 100:+.1f}</b> pts</span></div>'
             f'<div class="fx-track"><div class="fx-axis"></div>'
             f'<div class="fx-bar" style="{pos};background:{color}"></div></div>'
             f'<div class="muted">{fmt_value(name, f["value"])} '
@@ -373,17 +295,154 @@ def factors_html(exp):
     rows.append(f'<div class="muted">All other features combined: <b>{other * 100:+.1f}</b> pts</div>')
     return "".join(rows)
 
+
+def reasons_html(exp):
+    """Plain-language main reasons. Sensitive/economic features are left out of the prose."""
+    if not exp:
+        return ""
+    items = []
+    for f in exp["top_factors"]:
+        if f["feature"] in TAGS:
+            continue
+        label = FEATURE_LABELS.get(f["feature"], f["feature"])
+        verb = "raised" if f["effect"] > 0 else "lowered"
+        items.append(
+            f"<li><b>{label}</b>: {fmt_value(f['feature'], f['value'])} "
+            f"(typical student: {fmt_value(f['feature'], f['typical_value'])}) "
+            f"{verb} the Dropout score by {abs(f['effect']) * 100:.1f} points.</li>"
+        )
+        if len(items) == 3:
+            break
+    if not items:
+        return ""
+    return ('<div class="kicker" style="margin-top:.9rem">Main reasons behind the Dropout score</div>'
+            "<ul>" + "".join(items) + "</ul>")
+
+
+def render_result(out, p):
+    pred, probs = out["prediction"], out["probabilities"]
+    top = probs[pred]
+    color = COLORS[pred]
+    exp = out.get("explanation")
+    conf = "High score" if top >= 0.7 else "Moderate score" if top >= 0.5 else "Low score: mixed signals"
+
+    st.subheader("Result")
+    left, right = st.columns(2, gap="large")
+
+    with left:
+        st.markdown(
+            f'<div class="card" style="border-left:6px solid {color}">'
+            '<div class="kicker">What the model found</div>'
+            f'<div class="outcome" style="color:{color}">{pred}</div>'
+            f'<span class="pill" style="background:{color}">{conf}</span>'
+            f'<div class="result"><div>{donut_svg(probs, pred)}</div>'
+            f'<div class="bars">{bars_html(probs)}</div></div>'
+            '<div class="muted" style="margin-top:.6rem">Model scores that add up to 100%. '
+            "They are not verified probabilities of real outcomes.</div></div>",
+            unsafe_allow_html=True,
+        )
+
+    with right:
+        if top >= 0.5:
+            tail = ", the highest of the three outcomes."
+        else:
+            tail = ", but no outcome stands out, so the model is unsure."
+        summary = (
+            f"The model gives this student a <b>{top:.0%}</b> score for <b>{pred}</b>{tail} "
+            f"Their first-semester record looks most like students who {PHRASE[pred]}. "
+            "This is an estimate learned from past students, not a fact about this individual."
+        )
+        st.markdown(
+            '<div class="card"><div class="kicker">What this means</div>'
+            f"<p>{summary}</p>{reasons_html(exp)}</div>",
+            unsafe_allow_html=True,
+        )
+        steps = list(NEXT_STEPS[pred])
+        if top < 0.5:
+            steps.append("Because no outcome stands out, rely more on what you know about the student.")
+        st.markdown(
+            f'<div class="card" style="border-left:6px solid {color}">'
+            '<div class="kicker">What to do next</div><ul>'
+            + "".join(f"<li>{t}</li>" for t in steps)
+            + "</ul></div>",
+            unsafe_allow_html=True,
+        )
+
+    for note in soft_checks(p):
+        st.warning(note)
+    st.caption(out["disclaimer"])
+
+    if exp:
+        st.subheader("Why this score?")
+        st.markdown(
+            f"The model's **Dropout score** is **{exp['student_score']:.0%}** for this student, "
+            f"compared with **{exp['typical_student_score']:.0%}** for a typical student. "
+            "Red bars (▲) pushed the score up and green bars (▼) pushed it down. "
+            "One point (pt) is one percentage point of Dropout score."
+        )
+        st.markdown(factors_html(exp), unsafe_allow_html=True)
+        st.caption(exp["note"] + " The explanation is always about the Dropout score, "
+                   "whichever outcome was predicted.")
+
+    enrolled, approved = p["sem1_enrolled"], p["sem1_approved"]
+    rate = min(approved / enrolled, 1.0) if enrolled > 0 else 0.0
+    st.subheader("Inputs at a glance")
+    st.markdown(
+        '<div class="tiles">'
+        + tile("Units passed", f"{approved} of {enrolled}")
+        + tile("Share passed", f"{rate:.0%}")
+        + tile("Average grade", f"{p['sem1_grade']:.1f} / 20")
+        + tile("Tuition fees", "Up to date" if p["tuition_fees_up_to_date"] else "Not up to date")
+        + tile("Age at enrollment", p["age_at_enrollment"])
+        + "</div>",
+        unsafe_allow_html=True,
+    )
+    st.caption("These are the values you entered, not the model's reasoning.")
+
+
+def comparison_bars(results, metric):
+    rows = sorted(results, key=lambda r: r[metric]["mean"], reverse=True)
+    out = []
+    for r in rows:
+        m, sd = r[metric]["mean"], r[metric]["std"]
+        final = r["model"] == SELECTED_MODEL
+        color = "#4338ca" if final else "rgba(128,128,128,.55)"
+        tag = " ★ selected" if final else ""
+        out.append(
+            f'<div class="bar-row"><div class="bar-label"><span>{r["model"]}{tag}</span>'
+            f'<span><b>{m:.3f}</b> <span class="muted">± {sd:.3f}</span></span></div>'
+            f'<div class="bar-track"><div class="bar-fill" '
+            f'style="width:{m * 100:.1f}%;background:{color}"></div></div></div>'
+        )
+    return "".join(out)
+
+
+def confusion_html(labels, cm):
+    head = "<tr><th></th>" + "".join(f"<th>Predicted<br>{l}</th>" for l in labels) + "</tr>"
+    body = ""
+    for i, row in enumerate(cm):
+        total = sum(row) or 1
+        cells = ""
+        for j, v in enumerate(row):
+            share = v / total
+            rgb = "27,127,85" if i == j else "198,40,40"
+            cells += (f'<td style="background:rgba({rgb},{0.08 + 0.55 * share:.2f})">'
+                      f'<b>{v}</b><br><span class="muted">{share:.0%} of actual</span></td>')
+        body += f"<tr><th>Actual<br>{labels[i]}</th>{cells}</tr>"
+    return f'<table class="cm">{head}{body}</table>'
+
+
 # ---------------- Sidebar ----------------
 with st.sidebar:
     st.header("🎓 EduGuard AI")
     health = api_get("/health")
     if health is None:
-        st.error("● API offline")
+        st.error("● Prediction service offline")
         st.caption("Start it with `uvicorn app.main:app`")
     elif not health.get("model_loaded"):
-        st.warning("● API online, model not loaded")
+        st.warning("● Service online, model not loaded")
     else:
-        st.success("● API online · model loaded")
+        st.success("● Service online · model loaded")
         info = api_get("/model-info")
         if info:
             st.caption(
@@ -400,12 +459,17 @@ with st.sidebar:
 
 # ---------------- Header ----------------
 st.markdown(
-    '<div class="hero"><h1>🎓 EduGuard AI</h1>'
-    "<p>Estimate how a student's first semester points toward Dropout, Enrolled, "
-    "or Graduate, so support can reach the right students sooner.</p>"
-    '<span class="chip">30 input features</span>'
-    '<span class="chip">3 possible outcomes</span>'
-    '<span class="chip">UCI open dataset · CC BY 4.0</span></div>',
+    '<div class="hero"><h1>EduGuard AI</h1>'
+    "<p>Helps advisors spot students who may need support early. Enter a student's "
+    "first-semester details to see whether they are likely to drop out, still be "
+    "enrolled, or graduate, and why.</p></div>"
+    '<div class="steps">'
+    '<div class="s"><span class="badge">1</span><div><b>Enter details</b>'
+    "Fill in the form, or load an example from the sidebar.</div></div>"
+    '<div class="s"><span class="badge">2</span><div><b>Estimate the outcome</b>'
+    "Press the button at the end of the form.</div></div>"
+    '<div class="s"><span class="badge">3</span><div><b>Read and act</b>'
+    "The result appears right below the button, with reasons and next steps.</div></div></div>",
     unsafe_allow_html=True,
 )
 
@@ -415,148 +479,142 @@ tab_predict, tab_perf, tab_codes, tab_about = st.tabs(
 
 # ---------------- Predict ----------------
 with tab_predict:
-    left, right = st.columns([3, 2], gap="large")
+    with st.form("student_form"):
+        with st.container(border=True):
+            step(1, "About the student")
+            hint("Hover over the ? icons for what each field means.")
+            c1, c2 = st.columns(2)
+            c1.number_input("Age at enrollment", min_value=16, max_value=100, step=1, key="age")
+            c2.selectbox("Marital status", list(MARITAL_STATUS),
+                         format_func=MARITAL_STATUS.get, key="marital")
+            c1.selectbox("Attendance", [1, 0],
+                         format_func=lambda v: "Daytime" if v else "Evening", key="daytime")
+            c2.selectbox("Gender", [0, 1], format_func=GENDER.get, key="gender",
+                         help="The dataset records gender as male or female only. "
+                              "Gender can raise fairness concerns; see the About tab.")
+            t1, t2, t3 = st.columns(3)
+            t1.toggle("Displaced", key="displaced",
+                      help="Whether the student is recorded as displaced in the dataset.")
+            t2.toggle("International", key="international")
+            t3.toggle("Special needs", key="special",
+                      help="Recorded as 'educational special needs' in the dataset.")
 
-    with left:
-        with st.form("student_form"):
-            with st.container(border=True):
-                step(1, "About the student")
-                hint("Hover over the ? icons for what each field means.")
-                c1, c2 = st.columns(2)
-                c1.number_input("Age at enrollment", min_value=16, max_value=100, step=1, key="age")
-                c2.selectbox("Marital status", list(MARITAL_STATUS),
-                             format_func=MARITAL_STATUS.get, key="marital")
-                c1.selectbox("Attendance", [1, 0],
-                             format_func=lambda v: "Daytime" if v else "Evening", key="daytime")
-                c2.selectbox("Gender", [0, 1], format_func=GENDER.get, key="gender",
-                             help="The dataset records gender as male or female only. "
-                                  "Gender can raise fairness concerns; see the About tab.")
-                t1, t2, t3 = st.columns(3)
-                t1.toggle("Displaced", key="displaced",
-                          help="Whether the student is recorded as displaced in the dataset.")
-                t2.toggle("International", key="international")
-                t3.toggle("Special needs", key="special",
-                          help="Recorded as 'educational special needs' in the dataset.")
+        with st.container(border=True):
+            step(2, "Finances")
+            hint("Yes/No answers about the student's account with the institution.")
+            f1, f2, f3 = st.columns(3)
+            f1.toggle("Debtor", key="debtor")
+            f2.toggle("Fees up to date", key="fees", help="Tuition fees paid up to date.")
+            f3.toggle("Scholarship", key="scholarship")
 
-            with st.container(border=True):
-                step(2, "Finances")
-                hint("Yes/No answers about the student's account with the institution.")
-                f1, f2, f3 = st.columns(3)
-                f1.toggle("Debtor", key="debtor")
-                f2.toggle("Fees up to date", key="fees",
-                          help="Tuition fees paid up to date.")
-                f3.toggle("Scholarship", key="scholarship")
+        with st.container(border=True):
+            step(3, "First-semester results")
+            hint("A curricular unit is one course subject. Counts are for the first semester.")
+            s1, s2, s3 = st.columns(3)
+            s1.number_input("Units enrolled", min_value=0, max_value=60, step=1, key="enrolled",
+                            help="Number of subjects the student signed up for.")
+            s2.number_input("Units approved", min_value=0, max_value=60, step=1, key="approved",
+                            help="Number of subjects the student passed.")
+            s3.number_input("Evaluations taken", min_value=0, max_value=100, step=1, key="evaluations",
+                            help="Number of exams/assessments taken across those subjects.")
+            s4, s5 = st.columns(2)
+            s4.number_input("Units credited", min_value=0, max_value=60, step=1, key="credited",
+                            help="Curricular units credited in the first semester, as recorded in the dataset.")
+            s5.number_input("Units without evaluations", min_value=0, max_value=60, step=1, key="without_eval",
+                            help="Units with no evaluation recorded.")
+            st.slider("Average grade (0-20)", 0.0, 20.0, step=0.1, key="grade",
+                      help="Average grade across the first semester on a 0-20 scale. "
+                           "0 means no unit was passed.")
 
-            with st.container(border=True):
-                step(3, "First-semester results")
-                hint("A curricular unit is one course subject. Counts are for the first semester.")
-                s1, s2, s3 = st.columns(3)
-                s1.number_input("Units enrolled", min_value=0, max_value=60, step=1, key="enrolled",
-                                help="Number of subjects the student signed up for.")
-                s2.number_input("Units approved", min_value=0, max_value=60, step=1, key="approved",
-                                help="Number of subjects the student passed.")
-                s3.number_input("Evaluations taken", min_value=0, max_value=100, step=1, key="evaluations",
-                                help="Number of exams/assessments taken across those subjects.")
-                s4, s5 = st.columns(2)
-                s4.number_input("Units credited", min_value=0, max_value=60, step=1, key="credited",
-                                help="Curricular units credited in the first semester, as recorded in the dataset.")
-                s5.number_input("Units without evaluations", min_value=0, max_value=60, step=1, key="without_eval",
-                                help="Units with no evaluation recorded.")
-                st.slider("Average grade (0-20)", 0.0, 20.0, step=0.1, key="grade",
-                          help="Average grade across the first semester on a 0-20 scale. "
-                               "0 means no unit was passed.")
+        with st.expander("4 · Application and background (optional)"):
+            hint("Pre-filled with typical values. Change them if you know the student's details. "
+                 "Every code is explained in the Code guide tab.")
+            st.selectbox("Course", list(COURSE), format_func=COURSE.get, key="course")
+            st.selectbox("Application mode", list(APPLICATION_MODE),
+                         format_func=APPLICATION_MODE.get, key="app_mode",
+                         help="How the student applied to the institution.")
+            st.number_input("Application order (0 = first choice, 9 = last)",
+                            min_value=0, max_value=9, step=1, key="app_order",
+                            help="Which choice this course was on the student's application.")
+            st.selectbox("Previous qualification", list(PREVIOUS_QUALIFICATION),
+                         format_func=PREVIOUS_QUALIFICATION.get, key="prev_qual")
+            g1, g2 = st.columns(2)
+            g1.number_input("Previous qualification grade (0-200)", min_value=0.0,
+                            max_value=200.0, step=0.1, format="%.1f", key="prev_grade")
+            g2.number_input("Admission grade (0-200)", min_value=0.0,
+                            max_value=200.0, step=0.1, format="%.1f", key="adm_grade")
+            st.selectbox("Nationality", list(NATIONALITY),
+                         format_func=NATIONALITY.get, key="nationality")
+            st.selectbox("Mother's qualification", list(MOTHER_QUALIFICATION),
+                         format_func=MOTHER_QUALIFICATION.get, key="mq")
+            st.selectbox("Father's qualification", list(FATHER_QUALIFICATION),
+                         format_func=FATHER_QUALIFICATION.get, key="fq")
+            st.selectbox("Mother's occupation", list(MOTHER_OCCUPATION),
+                         format_func=MOTHER_OCCUPATION.get, key="mo")
+            st.selectbox("Father's occupation", list(FATHER_OCCUPATION),
+                         format_func=FATHER_OCCUPATION.get, key="fo")
+            e1, e2, e3 = st.columns(3)
+            e1.number_input("Inflation rate (%)", min_value=-5.0, max_value=20.0,
+                            step=0.1, key="inflation")
+            e2.number_input("Unemployment rate (%)", min_value=0.0, max_value=30.0,
+                            step=0.1, key="unemployment")
+            e3.number_input("GDP", min_value=-10.0, max_value=10.0, step=0.01, key="gdp",
+                            help="Economic indicators as recorded in the dataset.")
 
-            with st.expander("4 · Application and background (optional)"):
-                hint("Pre-filled with typical values. Change them if you know the student's details. "
-                     "Every code is explained in the Code guide tab.")
-                st.selectbox("Course", list(COURSE), format_func=COURSE.get, key="course")
-                st.selectbox("Application mode", list(APPLICATION_MODE),
-                             format_func=APPLICATION_MODE.get, key="app_mode",
-                             help="How the student applied to the institution.")
-                st.number_input("Application order (0 = first choice, 9 = last)",
-                                min_value=0, max_value=9, step=1, key="app_order",
-                                help="Which choice this course was on the student's application.")
-                st.selectbox("Previous qualification", list(PREVIOUS_QUALIFICATION),
-                             format_func=PREVIOUS_QUALIFICATION.get, key="prev_qual")
-                g1, g2 = st.columns(2)
-                g1.number_input("Previous qualification grade (0-200)", min_value=0.0,
-                                max_value=200.0, step=0.1, format="%.1f", key="prev_grade")
-                g2.number_input("Admission grade (0-200)", min_value=0.0,
-                                max_value=200.0, step=0.1, format="%.1f", key="adm_grade")
-                st.selectbox("Nationality", list(NATIONALITY),
-                             format_func=NATIONALITY.get, key="nationality")
-                st.selectbox("Mother's qualification", list(MOTHER_QUALIFICATION),
-                             format_func=MOTHER_QUALIFICATION.get, key="mq")
-                st.selectbox("Father's qualification", list(FATHER_QUALIFICATION),
-                             format_func=FATHER_QUALIFICATION.get, key="fq")
-                st.selectbox("Mother's occupation", list(MOTHER_OCCUPATION),
-                             format_func=MOTHER_OCCUPATION.get, key="mo")
-                st.selectbox("Father's occupation", list(FATHER_OCCUPATION),
-                             format_func=FATHER_OCCUPATION.get, key="fo")
-                e1, e2, e3 = st.columns(3)
-                e1.number_input("Inflation rate (%)", min_value=-5.0, max_value=20.0,
-                                step=0.1, key="inflation")
-                e2.number_input("Unemployment rate (%)", min_value=0.0, max_value=30.0,
-                                step=0.1, key="unemployment")
-                e3.number_input("GDP", min_value=-10.0, max_value=10.0,
-                                step=0.01, key="gdp",
-                                help="Economic indicators as recorded in the dataset.")
+        submitted = st.form_submit_button("Estimate student outcome", type="primary")
 
-            submitted = st.form_submit_button("Predict outcome", type="primary")
-
-    with right:
-        if submitted:
-            payload = build_payload()
-            try:
-                r = httpx.post(f"{API_URL}/predict", json=payload, timeout=10)
-            except httpx.HTTPError:
-                st.error("Can't reach the prediction API. Start it with "
-                         "`uvicorn app.main:app`.")
-            else:
-                if r.status_code == 200:
-                    S["result"] = {"out": r.json(), "payload": payload}
-                elif r.status_code == 422:
-                    st.error("The API rejected some inputs:")
-                    for err in r.json()["detail"]:
-                        st.write(f"- **{err['loc'][-1]}**: {err['msg']}")
-                else:
-                    st.error(f"API error {r.status_code}")
-
-        res = S.get("result")
-        if res:
-            render_result(res["out"], res["payload"])
+    # The result is drawn directly under the button, so it is on screen after pressing it.
+    if submitted:
+        payload = build_payload()
+        try:
+            with st.spinner("Estimating the outcome and preparing the explanation..."):
+                r = httpx.post(f"{API_URL}/predict", json=payload, timeout=30)
+        except httpx.HTTPError:
+            st.error("Can't reach the prediction service. Start it with "
+                     "`uvicorn app.main:app`, then try again.")
         else:
-            st.markdown(
-                '<div class="card"><div class="step">How it works</div>'
-                '<div class="howto">'
-                '<div><span class="badge">1</span><span>Enter the student\'s details, or pick an '
-                "example in the sidebar.</span></div>"
-                '<div><span class="badge">2</span><span>Press <b>Predict outcome</b>.</span></div>'
-                '<div><span class="badge">3</span><span>Read the scores for Dropout, Enrolled '
-                "and Graduate. They are estimates to guide support.</span></div>"
-                "</div></div>",
-                unsafe_allow_html=True,
-            )
+            if r.status_code == 200:
+                S["result"] = {"out": r.json(), "payload": payload}
+                st.toast("Estimate ready", icon="✅")
+            elif r.status_code == 422:
+                st.error("Some values need fixing before we can estimate:")
+                for err in r.json()["detail"]:
+                    st.write(f"- **{err['loc'][-1]}**: {err['msg']}")
+            else:
+                st.error(f"The service returned an error ({r.status_code}). Please try again.")
 
-
-
-
+    res = S.get("result")
+    if res:
+        render_result(res["out"], res["payload"])
+    else:
+        st.markdown(
+            '<div class="card"><div class="kicker">Result</div>'
+            '<p><b>No estimate yet.</b> The form is pre-filled with a sample student, so you '
+            "can press <b>Estimate student outcome</b> right away, or try an example "
+            "from the sidebar. Your result will appear here.</p></div>",
+            unsafe_allow_html=True,
+        )
 
 # ---------------- Model performance ----------------
 with tab_perf:
     perf = api_get("/model-performance")
     if perf is None:
-        st.info("Performance data isn't available. Start the API, then run "
+        st.info("Performance data isn't available. Start the service, then run "
                 "`python src/evaluate.py` and `python src/compare_models.py`.")
     else:
         test, comp = perf["test"], perf["comparison"]
-        st.markdown("### Held-out test results")
+        st.subheader("Held-out test results")
         st.caption("Scored once on 885 students the model never saw during training or tuning.")
-        k1, k2, k3 = st.columns(3)
-        k1.markdown(tile("Accuracy", f"{test['accuracy']:.1%}"), unsafe_allow_html=True)
-        k2.markdown(tile("Macro F1", f"{test['macro_f1']:.3f}"), unsafe_allow_html=True)
-        k3.markdown(tile("Dropout recall", f"{test['per_class']['Dropout']['recall']:.1%}"),
-                    unsafe_allow_html=True)
+        st.markdown(
+            '<div class="tiles">'
+            + tile("Accuracy", f"{test['accuracy']:.1%}")
+            + tile("Macro F1", f"{test['macro_f1']:.3f}")
+            + tile("Dropout recall", f"{test['per_class']['Dropout']['recall']:.1%}")
+            + "</div>",
+            unsafe_allow_html=True,
+        )
+        st.caption("Dropout recall = of the students who really dropped out, the share the "
+                   "model flagged.")
 
         cm_col, pc_col = st.columns([3, 2], gap="large")
         with cm_col:
@@ -574,7 +632,7 @@ with tab_perf:
             st.caption("Enrolled is the weakest class: its outcome is still open, so the "
                        "model finds only a minority of those students.")
 
-        st.markdown("### Model comparison")
+        st.subheader("Model comparison")
         if comp is None:
             st.info("Run `python src/compare_models.py` to generate the comparison.")
         else:
@@ -595,13 +653,9 @@ with tab_perf:
                 "after the choice was made."
             )
 
-
-
-
-
 # ---------------- Code guide ----------------
 with tab_codes:
-    st.markdown("### Code guide")
+    st.subheader("Code guide")
     st.markdown(
         "The dataset stores many answers as numbers. The form shows names, and this "
         "page lists every number and its meaning. Labels are copied from the "
@@ -644,6 +698,21 @@ with tab_codes:
 
 # ---------------- About ----------------
 with tab_about:
+    st.subheader("Frequently asked questions")
+    with st.expander("What is the Dropout score?"):
+        st.write("A number from 0% to 100% from the model for how strongly the student's "
+                 "inputs resemble students who dropped out. It is a score, not a "
+                 "guarantee, and it is not a verified probability.")
+    with st.expander("What is a 'typical student'?"):
+        st.write("A reference student built from the most common value of each feature "
+                 "in the training data. The explanation shows how this student differs "
+                 "from that reference. The reference is not the average dropout risk.")
+    with st.expander("What does 'Low score: mixed signals' mean?"):
+        st.write("The top outcome has under 50% of the score, so the model is split. "
+                 "Rely more on your own knowledge of the student.")
+    with st.expander("Can I use this to make decisions about a student?"):
+        st.write("No. It is meant to help advisors decide who to check in with. "
+                 "A person should always make the decision.")
     st.markdown("""
 ### What this tool does
 EduGuard AI estimates whether a student is more likely to **drop out**, **still be
