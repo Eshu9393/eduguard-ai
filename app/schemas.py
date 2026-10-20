@@ -82,9 +82,29 @@ class StudentFeatures(BaseModel):
     sem1_grade: float = Field(ge=0, le=20)
     sem1_without_evaluations: int = Field(ge=0, le=60)
 
+class Factor(BaseModel):
+    feature: str
+    value: float
+    typical_value: float
+    effect: float
+
+
+class Explanation(BaseModel):
+    target: Literal["Dropout"] = "Dropout"
+    typical_student_score: float
+    student_score: float
+    top_factors: list[Factor]
+    other_features_effect: float
+    note: str = (
+        "Effects show how much each input moved this student's Dropout score compared "
+        "with a typical student. They describe the model's behavior, not causes."
+    )
+
+
 class PredictionResponse(BaseModel):
     prediction: Literal["Dropout", "Enrolled", "Graduate"]
     probabilities: dict[str, float]
+    explanation: Explanation | None = None
     disclaimer: str = (
         "This is a statistical estimate, not a definitive judgment about a student."
     )

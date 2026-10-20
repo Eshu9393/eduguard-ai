@@ -81,3 +81,14 @@ def test_model_performance(client):
     cm = test["confusion_matrix"]
     assert len(cm) == 3 and all(len(row) == 3 for row in cm)
     assert set(test["per_class"]) == {"Dropout", "Enrolled", "Graduate"}
+
+def test_predict_includes_explanation(client):
+    body = client.post("/predict", json=VALID_STUDENT).json()
+    exp = body["explanation"]
+    assert exp is not None
+    assert len(exp["top_factors"]) == 6
+    # the explanation's final score must match the model's Dropout probability
+    assert exp["student_score"] == pytest.approx(body["probabilities"]["Dropout"], abs=0.002)
+    # effects are sorted by size
+    sizes = [abs(f["effect"]) for f in exp["top_factors"]]
+    assert sizes == sorted(sizes, reverse=True)
