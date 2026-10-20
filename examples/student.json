@@ -1,0 +1,12 @@
+{
+  "gender": 1, "debtor": 0, "scholarship_holder": 0, "displaced": 1,
+  "international": 0, "educational_special_needs": 0, "daytime_attendance": 1,
+  "tuition_fees_up_to_date": 1, "marital_status": 1, "application_mode": 17,
+  "course": 9238, "previous_qualification": 1, "nationality": 1,
+  "mothers_qualification": 19, "fathers_qualification": 19,
+  "mothers_occupation": 5, "fathers_occupation": 5, "application_order": 1,
+  "previous_qualification_grade": 130.0, "admission_grade": 125.0,
+  "age_at_enrollment": 19, "inflation_rate": 1.4, "unemployment_rate": 11.1,
+  "gdp": 0.32, "sem1_credited": 0, "sem1_enrolled": 6, "sem1_evaluations": 8,
+  "sem1_approved": 5, "sem1_grade": 12.5, "sem1_without_evaluations": 0
+}
