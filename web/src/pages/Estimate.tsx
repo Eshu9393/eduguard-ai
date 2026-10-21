@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ResultView } from "../components/ResultView";
 import { NumberField, SelectField, ToggleField } from "../components/fields";
 import { Stepper } from "../components/Stepper";
 import {
@@ -84,6 +85,23 @@ export default function Estimate() {
     } finally {
       setLoading(false);
     }
+  }
+
+if (result) {
+     return (
+      <ResultView
+        result={result}
+        cautions={cautions}
+        onEdit={() => setResult(null)}
+        onReset={() => {
+          setV(DEFAULTS);
+          setStep(0);
+          setErrors({});
+          setResult(null);
+          setFailure(null);
+        }}
+      />
+    );
   }
 
   return (
@@ -200,17 +218,7 @@ export default function Estimate() {
           </div>
         )}
 
-        {result && (
-          <div className="mt-10 rounded-xl border border-line bg-white p-6">
-            <p className="text-sm text-ink-soft">Most likely outcome (temporary view)</p>
-            <p className="font-display text-3xl font-semibold">{result.prediction}</p>
-            <ul className="mt-3 text-sm text-ink-soft">
-              {(Object.entries(result.probabilities) as [string, number][]).map(([k, p]) => (
-                <li key={k}>{k}: {(p * 100).toFixed(0)}%</li>
-              ))}
-            </ul>
-          </div>
-        )}
+        
       </div>
     </section>
   );
