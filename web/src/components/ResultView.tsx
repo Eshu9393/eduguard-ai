@@ -119,7 +119,9 @@ export function ResultView({ result, cautions, onEdit, onReset }: Props) {
   const top = probs[pred];
   const confidence = top >= 0.7 ? "High score" : top >= 0.5 ? "Moderate score" : "Low score: mixed signals";
 
-  useEffect(() => window.scrollTo(0, 0), []);
+  useEffect(() => {
+  window.scrollTo(0, 0);
+}, []);
 
   const summary =
     (top >= 0.5

@@ -5,8 +5,10 @@ import About from "./pages/About";
 import CodeGuide from "./pages/CodeGuide";
 import HowItWorks from "./pages/HowItWorks";
 import { NotFound } from "./pages/Placeholders";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 export default function App() {
   return (
+    <ErrorBoundary>
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
@@ -18,5 +20,6 @@ export default function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+    </ErrorBoundary>
   );
 }
