@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 import logging
 from contextlib import asynccontextmanager
-
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, Request
 
 from app.predictor import Predictor
@@ -29,6 +29,12 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
+)
 
 def get_predictor(request: Request) -> Predictor:
     predictor = request.app.state.predictor
