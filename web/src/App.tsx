@@ -1,8 +1,10 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import Estimate from "./pages/Estimate";
-import { About, CodeGuide, HowItWorks, NotFound } from "./pages/Placeholders";
-
+import About from "./pages/About";
+import CodeGuide from "./pages/CodeGuide";
+import HowItWorks from "./pages/HowItWorks";
+import { NotFound } from "./pages/Placeholders";
 export default function App() {
   return (
     <BrowserRouter>
