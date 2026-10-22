@@ -91,6 +91,7 @@ if (result) {
      return (
       <ResultView
         result={result}
+        values={v}
         cautions={cautions}
         onEdit={() => setResult(null)}
         onReset={() => {

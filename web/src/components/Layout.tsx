@@ -11,7 +11,7 @@ const LINKS = [
 export function Layout() {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="border-b border-line">
+      <header className="border-b border-line print:hidden">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-6 py-4">
           <NavLink to="/" className="font-display text-xl font-semibold">
             EduGuard AI
@@ -43,7 +43,7 @@ export function Layout() {
         <Outlet />
       </main>
 
-      <footer className="border-t border-line">
+      <footer className="border-t border-line print:hidden">
         <p className="mx-auto max-w-5xl px-6 py-5 text-sm text-ink-soft">
           Estimates are statistical guidance, not definitive judgments about students.
           A person should always make the decision.

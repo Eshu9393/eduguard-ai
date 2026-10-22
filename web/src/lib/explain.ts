@@ -99,3 +99,15 @@ export function formatValue(feature: string, v: number): string {
   }
   return Number.isInteger(v) ? String(v) : String(Number(v.toFixed(2)));
 }
+
+const CHANGEABLE = new Set([
+  "Curricular units 1st sem (approved)",
+  "Curricular units 1st sem (evaluations)",
+  "Curricular units 1st sem (grade)",
+  "Curricular units 1st sem (without evaluations)",
+  "Tuition fees up to date",
+  "Debtor",
+  "Scholarship holder",
+]);
+
+export const isChangeable = (feature: string) => CHANGEABLE.has(feature);
