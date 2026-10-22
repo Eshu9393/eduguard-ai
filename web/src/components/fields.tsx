@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+
 import type { Option } from "../data/codes";
 
 const inputClass =
