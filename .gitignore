@@ -5,3 +5,5 @@ data/raw/
 notebooks/*.png
 .vercel
 .env*
+
+node_modules/
