@@ -7,19 +7,32 @@ the first semester, and explains each estimate in plain language.
 It is built as a learning and portfolio project. It is **not** a validated tool for
 real decisions about students.
 
+## Live demo
+
+- **Website:** https://eduguard-ai-suzl.vercel.app
+- **API docs:** https://eduguard-ai-eight.vercel.app/docs
+
+
+
 ## What it includes
 
 - A scikit-learn pipeline (preprocessing + model), compared across 5 algorithms with
   stratified cross-validation and tuned hyperparameters
-- A FastAPI service (`/predict`, `/model-info`, `/model-performance`, `/health`)
-  with Pydantic input validation, and 16 automated tests
-- Per-student explanations using SHAP
-- A Streamlit dashboard: prediction form, plain-language result, explanation chart,
-  model performance, and a guide to every dataset code
+- A FastAPI service (`/predict`, `/model-info`, `/model-performance`, `/health`) with
+  Pydantic validation, per-student SHAP explanations, and automated tests
+- A React website (Vite, TypeScript, Tailwind): a guided form, a plain-language result
+  page, an explanation chart, an action plan, and a guide to the dataset's codes
+- A Streamlit dashboard, kept as a quick local demo and as the place for the
+  model-evaluation charts
+
 
 ## Screenshots
 
-Screenshots will be added in `docs/images/`.
+![Guided form](docs/images/01-form.png)
+![Result page](docs/images/02-result-dropout.png)
+![Why this score](docs/images/03-why-this-score.png)
+![Review step](docs/images/04-review.png)
+
 
 ## Results
 
@@ -104,21 +117,23 @@ Explanations describe the model's behavior, not real-world causes.
 
 ```mermaid
 flowchart LR
-    A["UCI dataset (CSV)"] --> B["src/: preprocessing, tuning, evaluation"]
-    B --> C[("models/: pipeline, metrics, baseline")]
-    C --> D["FastAPI service (app/)"]
-    D --> E["Streamlit dashboard (dashboard/)"]
-    F["User"] --> E
-    D --> G["Prediction + explanation"]
+    D["UCI dataset"] --> T["Training and evaluation (src/)"]
+    T --> M[("models/: pipeline, metrics, baseline")]
+    U["User"] --> W["React website (web/) on Vercel"]
+    W -->|"HTTPS, allowed origins only"| A["FastAPI service (app/) on Vercel"]
+    M --> A
+    A --> R["Prediction + SHAP explanation"]
 ```
 
 Training happens offline. The API loads the saved pipeline once at startup and never
-retrains. The dashboard calls the API over HTTP.
+retrains. The website calls the API over HTTPS, and the API only accepts requests from
+the website's address.
 
 ## Project structure
 
 ```
 app/            FastAPI service (main, schemas, predictor, explainer)
+web/            React website
 src/            Pipeline code: features, preprocessing, tuning, evaluation, SHAP
 dashboard/      Streamlit app and code tables
 models/         Saved pipeline, metrics, and baseline student
@@ -165,6 +180,35 @@ streamlit run dashboard/streamlit_app.py
 The API runs at http://127.0.0.1:8000 (interactive docs at `/docs`) and the dashboard
 at http://localhost:8501.
 
+
+
+## Run the website locally
+
+You need Node.js (the LTS version). With the API running (`uvicorn app.main:app`):
+
+```powershell
+cd web
+npm install
+npm run dev
+```
+
+The site runs at http://localhost:5173. To point it at a different API, set
+`VITE_API_URL` (see `web/.env.example`).
+
+## Deployment
+
+Both parts are deployed on Vercel as separate projects:
+
+| Part | Project settings | Environment variable |
+|---|---|---|
+| API | Repository root, `main` branch | `ALLOWED_ORIGINS`: the website's address (comma-separated for several) |
+| Website | Root directory `web` | `VITE_API_URL`: the API's address (read at build time) |
+
+`web/vercel.json` rewrites every path to `index.html`, so links like `/about` work.
+The API's `ALLOWED_ORIGINS` list means browsers on other sites can't call it.
+
+
+
 ## API example
 
 ```powershell
@@ -196,14 +240,15 @@ reproducibility. It needs `models/` to exist (run `src/evaluate.py` first).
   fairness audit has been done.
 - The economic indicators describe the period, not the student.
 - Model scores are not calibrated, verified probabilities.
-- Not deployed yet.
+- The free hosting plan means the first request after a quiet period can be slow.
+- The recommendations on the result page are rule-based suggestions, not validated advice.
 
 ## Future improvements
 
 - Retrain without gender and the economic indicators, and test for group differences
 - Check probability calibration
-- Deploy the API and dashboard on free-tier services
 - Evaluate on a time-based split, if enrollment dates become available
+- Add rate limiting to the public API.
 
 ## Data and license
 
