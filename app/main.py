@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 import logging
 from contextlib import asynccontextmanager
@@ -22,19 +23,29 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(
+app = FastAPI(                               # 1. app is created first
     title="EduGuard AI",
     description="Explainable student outcome prediction (Dropout / Enrolled / Graduate).",
     version="0.1.0",
     lifespan=lifespan,
 )
 
+
+DEFAULT_ORIGINS = (
+    "http://localhost:5173,http://127.0.0.1:5173,"
+    "http://localhost:4173,http://127.0.0.1:4173"
+)
+ALLOWED_ORIGINS = [
+    o.strip() for o in os.getenv("ALLOWED_ORIGINS", DEFAULT_ORIGINS).split(",") if o.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
 )
+
 
 def get_predictor(request: Request) -> Predictor:
     predictor = request.app.state.predictor
